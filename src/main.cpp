@@ -172,11 +172,11 @@
 #define TFTFILE     "/Arduino/ESP32-Radio.tft"          // Binary file name for update NEXTION image
 //
 // Define type of local filesystem(s).  See documentation.
-#define CH376                          // For CXH376 support (reading files from USB stick)
-#define SDCARD                         // For SD card support (reading files from SD card)
+// #define CH376                          // For CXH376 support (reading files from USB stick)
+// #define SDCARD                         // For SD card support (reading files from SD card)
 // Define (just one) type of display.  See documentation.
-#define BLUETFT                        // Works also for RED TFT 128x160
-//#define OLED1306                     // 64x128 I2C OLED SSD1306
+// #define BLUETFT                        // Works also for RED TFT 128x160
+#define OLED1306                     // 64x128 I2C OLED SSD1306
 //#define OLED1309                     // 64x128 I2C OLED SSD1309
 //#define OLED1106                     // 64x128 I2C OLED SH1106
 //#define DUMMYTFT                     // Dummy display
@@ -202,6 +202,8 @@
 #include <driver/adc.h>
 #include <Update.h>
 #include <base64.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 // Number of entries in the queue
 #define QSIZ 400
 // Debug buffer size
@@ -1137,7 +1139,7 @@ VS1053* vs1053player ;
  #include "oled.h"                                       // For OLED I2C SH1106 64x128 display
 #endif
 #ifdef LCD1602I2C
- #include "oled.h.h"                                     // For LCD 1602 display (I2C)
+ #include "LCD1602.h"                                     // For LCD 1602 display (I2C)
 #endif
 #ifdef LCD2004I2C
  #include "LCD2004.h"                                    // For LCD 2004 display (I2C)
@@ -2135,6 +2137,8 @@ bool connectwifi()
 
   WifiInfo_t winfo ;                                    // Entry from wifilist
 
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector 
+  delay(100);
   WiFi.disconnect ( true ) ;                            // After restart the router could
   WiFi.softAPdisconnect ( true ) ;                      // still keep the old connection
   vTaskDelay ( 1000 / portTICK_PERIOD_MS ) ;            // Silly things to start connection
@@ -2177,6 +2181,7 @@ bool connectwifi()
   tftlog ( pfs ) ;                                      // Show IP
   delay ( 3000 ) ;                                      // Allow user to read this
   tftlog ( "\f" ) ;                                     // Select new page if NEXTION 
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 1);            //enable brownout detector  
   return ( localAP == false ) ;                         // Return result of connection
 }
 
@@ -4419,7 +4424,7 @@ void loop()
   handleSaveReq() ;                                 // See if time to save settings
   handleIpPub() ;                                   // See if time to publish IP
   handleVolPub() ;                                  // See if time to publish volume
-  chk_enc() ;                                       // Check rotary encoder functions
+  //chk_enc() ;                                       // Check rotary encoder functions
   check_CH376() ;                                   // Check Flashdrive insert/remove
 }
 
