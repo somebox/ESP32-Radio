@@ -13,7 +13,7 @@ uint8_t dispdata[4]; // array for TM1637
 int TMBRIGHT = 4; // default medium brightness (possible values: 0-7)
 bool TMSTATE = true; // time will only be updated if this is set to true
 bool TMCLOCK = true; // module could be active but we could use commands to update the display (not implemented)
-bool TMDOT = false; // central colon is initially off, can be updated via command
+bool TMDOT = true; // central colon is initially off, can be updated via command
 
 // Color definitions for the TFT screen (if used)
 #define BLACK   0
@@ -85,7 +85,7 @@ void displaytime ( const char* str, uint16_t color )
   if ( TMCLOCK )
   {
   dispdata[0] = display.encodeDigit(str[0]);
-  if ( TMDOT )
+  if ( TMDOT && ((int) str[7] % 2 == 0))
   {
   dispdata[1] = display.encodeDigit(str[1]) | B10000000;
   } else {
