@@ -8,9 +8,9 @@
 #define TMCLK 25
 #define TMDIO 26
 
-TM1637Display display(TMCLK, TMDIO);
-uint8_t dispdata[4]; // array for TM1637
-int TMBRIGHT = 4; // default medium brightness (possible values: 0-7)
+TM1637Display clockDisplay(TMCLK, TMDIO);
+uint8_t clockstr[4]; // array for TM1637
+int TMBRIGHT = 2; // default medium brightness (possible values: 0-7)
 bool TMSTATE = true; // time will only be updated if this is set to true
 bool TMCLOCK = true; // module could be active but we could use commands to update the display (not implemented)
 bool TMDOT = true; // central colon is initially off, can be updated via command
@@ -25,75 +25,22 @@ bool TMDOT = true; // central colon is initially off, can be updated via command
 #define YELLOW  RED | GREEN
 #define WHITE   RED | GREEN | BLUE
 
-// Various macro's to mimic the ST7735 version of display functions
-#define dsp_setRotation()                                          // Use standard landscape format
-#define dsp_print(a)                                               // Print a string 
-#define dsp_println(a)                                             // Print string plus newline
-#define dsp_setTextSize(a)                                         // Set the text size
-#define dsp_setTextColor(a)                              
-#define dsp_setCursor(a,b)                                         // Position the cursor
-#define dsp_erase()                                                // Clear the screen
-#define dsp_getwidth()      0                                      // Get width of screen
-#define dsp_getheight()     0                                      // Get height of screen
-#define dsp_update()                                               // Updates to the physical screen
-#define dsp_usesSPI()       false                                  // Does not use SPI
 
-void* tft = NULL ;
-
-bool dsp_begin()
-{
-  return false ;
-}
-
-void dsp_fillRect ( int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color )
-{} ;                                                        // Fill a rectange
-
-
-#define TFTSECS 1
-scrseg_struct     tftdata[TFTSECS] =                        // Screen divided in 3 segments + 1 overlay
-{                                                           // One text line is 8 pixels
-  { false, WHITE,   0,  8, "" },                            // 1 top line
-} ;
-
-//**************************************************************************************************
-//                                      D I S P L A Y B A T T E R Y                                *
-//**************************************************************************************************
-// Dummy routine for this type of display.                                                         *
-//**************************************************************************************************
-void displaybattery()
-{
-}
-
-
-//**************************************************************************************************
-//                                      D I S P L A Y V O L U M E                                  *
-//**************************************************************************************************
-// Dummy routine for this type of display.                                                         *
-//**************************************************************************************************
-void displayvolume()
-{
-}
-
-
-//**************************************************************************************************
-//                                      D I S P L A Y T I M E                                      *
-//**************************************************************************************************
-// Dummy routine for this type of display.                                                         *
-//**************************************************************************************************
-void displaytime ( const char* str, uint16_t color )
+void showclock ( const char* str)
 {
   if ( TMCLOCK )
   {
-  dispdata[0] = display.encodeDigit(str[0]);
+  clockstr[0] = clockDisplay.encodeDigit(str[0]);
   if ( TMDOT && ((int) str[7] % 2 == 0))
   {
-  dispdata[1] = display.encodeDigit(str[1]) | B10000000;
+  clockstr[1] = clockDisplay.encodeDigit(str[1]) | B10000000;
   } else {
-  dispdata[1] = display.encodeDigit(str[1]);  
+  clockstr[1] = clockDisplay.encodeDigit(str[1]);  
   }
   
-  dispdata[2] = display.encodeDigit(str[3]);
-  dispdata[3] = display.encodeDigit(str[4]);
-  display.setSegments(dispdata);
+  clockstr[2] = clockDisplay.encodeDigit(str[3]);
+  clockstr[3] = clockDisplay.encodeDigit(str[4]);
+  clockDisplay.setSegments(clockstr);
+  clockDisplay.setBrightness(TMBRIGHT);
   }
 }
