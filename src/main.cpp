@@ -2158,9 +2158,9 @@ bool connectwifi()
   delay(100);
   WiFi.disconnect ( true ) ;                            // After restart the router could
   WiFi.softAPdisconnect ( true ) ;                      // still keep the old connection
-  vTaskDelay ( 1000 / portTICK_PERIOD_MS ) ;            // Silly things to start connection
+  vTaskDelay ( 500 / portTICK_PERIOD_MS ) ;            // Silly things to start connection
   WiFi.mode ( WIFI_STA ) ;
-  vTaskDelay ( 1000 / portTICK_PERIOD_MS ) ;
+  vTaskDelay ( 500 / portTICK_PERIOD_MS ) ;
   if ( wifilist.size()  )                               // Any AP defined?
   {
     if ( wifilist.size() == 1 )                         // Just one AP defined in preferences?
@@ -5608,8 +5608,10 @@ void handle_spec()
   }
   if ( tft || true)                                                  // Need to update TFT?
   {
-    handle_tft_txt() ;                                        // Yes, TFT refresh necessary
-    dsp_update() ;                                            // Be sure to paint physical screen
+    claimSPI ( "i2c_display" ) ;                        // Claim SPI bus
+    // handle_tft_txt() ;                                        // Yes, TFT refresh necessary
+    dsp_update() ;                                      // Updates to the screen
+    releaseSPI();  
   }
   if ( dsp_usesSPI() )                                        // Does display uses SPI?
   {

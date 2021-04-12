@@ -35,13 +35,15 @@ int scroll_offset = 0;
 #define dsp_getheight()     1                                      // Get height of screen
 #define dsp_usesSPI()       false                                  // Does not use SPI
 
+
+
 void* tft = NULL ;
 
 
 void alpha_write_buffer(){
   uint8_t c = ' ';
   int len = scroll_message.length();
-
+  
   for (int x=ALPHA_SIZE-1; x >= 0; x--){
     if ((scroll_offset + x > len - 1) || (scroll_offset + x < 0)){
       c = ' ';
@@ -53,8 +55,6 @@ void alpha_write_buffer(){
       alphaDisplay1.writeDigitAscii(x, c, dot);
     } else {
       alphaDisplay2.writeDigitAscii(x%8, c, dot);
-      if (x==8) {
-      }
     }
   }
 
@@ -67,10 +67,17 @@ void alpha_write_buffer(){
 
   //alphaDisplay2.writeDisplay();
   //delay(10);
+  vTaskDelay ( 2 ) ;  
   alphaDisplay1.writeDisplay();
-  delay(10);
+  //delay(10);
+  vTaskDelay ( 2 ) ;  
   alphaDisplay2.writeDisplay();
-  delay(10);
+  vTaskDelay ( 2 ) ;  
+  alphaDisplay2.writeDisplay();
+  delay ( 5 ) ;  
+  alphaDisplay2.writeDisplay();
+  delay ( 5 ) ;  
+  //delay(10);
 }
 
 bool dsp_begin()
@@ -143,8 +150,10 @@ void displaytime ( const char* str, uint16_t color )
 }
 
 void alpha_print(String str) {
-  dbgprint("  alpha_print(\"%s\")", str.c_str());
   if (str.length() == 0) return;
+  str.replace("\r","");
+  str.replace("\n"," - ");
+  dbgprint("  alpha_print(\"%s\")", str.c_str());
   scroll_message = str;
   scroll_offset = 0;
   alpha_write_buffer();
