@@ -19,7 +19,7 @@
 
 #include <driver/i2c.h>
 
-#define I2C_ADDRESS 0x27                                     // Adjust for your display
+#define I2C_ADDRESS 0x3F                                     // Adjust for your display
 #define ACKENA      true                                     // Enable ACK for I2C communication
 // Color definitions for the TFT screen (if used)
 #define BLACK   0
@@ -482,10 +482,9 @@ void displaytime ( const char* str, uint16_t color )
     {
       return ;                                           // No, quick return
     }
-    sprintf ( datetxt, "%s %02d.%02d.  %s",              // Format new time to a string
+    sprintf ( datetxt, "%s %02d  %s",              // Format new time to a string
                        WDAYS[timeinfo.tm_wday],
                        timeinfo.tm_mday,
-                       timeinfo.tm_mon + 1,
                        str ) ;
   }
   dline[0].str = String ( datetxt ) ;                    // Copy datestring or empty string to LCD line 0   
